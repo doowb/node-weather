@@ -2,10 +2,14 @@ var xml2js = require('xml2js'),
 		request = require('request');
 
 module.exports = function(geo, callback) {
+
+	geo.u = geo.u || 'f';
+
 	yahoo.logging = geo.logging;
 
 	yahoo.where(geo, function(woeid) {
-		yahoo.weather(woeid, callback);
+		geo.woeid = woeid;
+		yahoo.weather(geo, callback);
 	});
 };
 
@@ -25,8 +29,8 @@ var yahoo = {
 /**
  * Get the Yahoo weather based on geolocation.
  */
-yahoo.weather = function(woeid, callback) {
-	var url = 'http://weather.yahooapis.com/forecastrss?w='+woeid+'&u=c';
+yahoo.weather = function(geo, callback) {
+	var url = 'http://weather.yahooapis.com/forecastrss?w='+geo.woeid+'&u=' + geo.u;
 
 	if (yahoo.logging)
 		console.log('Requesting %s', url);
@@ -62,7 +66,7 @@ yahoo.weather = function(woeid, callback) {
  */
 yahoo.where = function(geo, callback) {
 	var url = 'http://where.yahooapis.com/geocode?location='+geo.lat+','+geo.long+'&flags=J&gflags=R';
-	
+
 	if (yahoo.logging)
 		console.log('Requesting %s', url);
 
